@@ -22,6 +22,7 @@ Author: Do-Gyeong Yuk.
 | `reinforcemen_model2.slx` | Simulink model referenced by `rl_model.m`: environment subsystem, observation and reward subsystems and five RL Agent blocks. |
 | `archive/reinforcemen_model.slx` | Earlier revision of the model with a simpler environment subsystem. |
 | `archive/reinforcemen_model4.slx` | Later revision with a different reward and a fixed-step solver; `rl_model.m` does not reference it. |
+| `data/traindataset.mat`, `data/traindataset_new.mat` | Logged goal and present positions of the five servos, replayed by the model. |
 | `docs/model_overview.png` | Thumbnail of the model diagram. |
 
 ## How it works
@@ -101,16 +102,16 @@ Author: Do-Gyeong Yuk.
 ## Running
 
 - Place `rl_model.m` and `reinforcemen_model2.slx` in the same folder or on the MATLAB path.
-- Provide a variable `outCopy` in the base workspace whose fields `goal_position` and `present_position` are five-channel logged signals.
+- Load `data/traindataset.mat` or `data/traindataset_new.mat` so that the variable `outCopy` exists in the base workspace.
 - Run `rl_model.m`; with `doTraining = true` it calls `train` on the five agents.
 
 ## Data
 
-- Not included: the two `.mat` files that supplied `outCopy`, because they are logs of a hardware run rather than code or simulation output.
-- The files held one `Simulink.SimulationOutput` with the signals `goal_position`, `present_position`, `present_load` and `present_velocity`.
+- `data/traindataset.mat` and `data/traindataset_new.mat` each hold `outCopy`, a log of a run of the robot hand hardware (March 2024).
+- Each file holds one `Simulink.SimulationOutput` with the signals `goal_position`, `present_position`, `present_load` and `present_velocity`.
 - Not included: trained agents and training logs, which were not in the source folder.
 
-| Property of the excluded log | Value |
+| Property of the log | Value |
 | --- | --- |
 | Channels per signal | 5 |
 | Samples | 376 |
