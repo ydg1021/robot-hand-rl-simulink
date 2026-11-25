@@ -1,0 +1,81 @@
+linearModel = fitlm(load_out.simout.Data(401:590,1),load_out.simout1.Data(401:590,1));
+linearModel2 = fitlm(load_out.simout.Data(401:590,2),load_out.simout1.Data(401:590,2));
+linearModel3 = fitlm(load_out.simout.Data(401:590,3),load_out.simout1.Data(401:590,3));
+linearModel4 = fitlm(load_out.simout.Data(401:590,4),load_out.simout1.Data(401:590,4));
+linearModel5 = fitlm(load_out.simout.Data(401:590,5),load_out.simout1.Data(401:590,5));
+
+coefficients1 = linearModel.Coefficients.Estimate;
+
+% 기울기 (slope)
+slope1 = coefficients1(2);
+
+% 절편 (intercept)
+intercept1 = coefficients1(1);
+
+coefficients2 = linearModel2.Coefficients.Estimate;
+
+% 기울기 (slope)
+slope2 = coefficients2(2);
+
+% 절편 (intercept)
+intercept2 = coefficients2(1);
+
+coefficients3 = linearModel3.Coefficients.Estimate;
+
+% 기울기 (slope)
+slope3 = coefficients3(2);
+
+% 절편 (intercept)
+intercept3 = coefficients3(1);
+
+coefficients4 = linearModel4.Coefficients.Estimate;
+
+% 기울기 (slope)
+slope4 = coefficients4(2);
+
+% 절편 (intercept)
+intercept4 = coefficients4(1);
+
+coefficients5 = linearModel5.Coefficients.Estimate;
+
+% 기울기 (slope)
+slope5 = coefficients5(2);
+
+% 절편 (intercept)
+intercept5 = coefficients5(1);
+
+
+
+
+x = out.servo_in.Data(1:123,1);
+y = out.goal_position.Data(1:123,1);
+
+x = servo4_new4.servo_in.Data;
+y = -(double(servo4_new4.goal_position.Data(:,4))-1023);
+
+
+ft = fittype('a / (1 + exp(-c*(x-b)))', ...
+    'independent', 'x', ...
+    'dependent', 'y');
+opts = fitoptions('Method', 'NonlinearLeastSquares');
+opts.StartPoint = [916, 66, 0.01]; % 시작점은 데이터를 기반으로 적절히 추정
+[model, gof] = fit(x, y, ft, opts);
+
+disp(model);
+
+for i = 1:71
+plt(i) = nonlinearRegressionModel(x(i));
+end
+plot(plt)
+diff = y-plt';
+plot(diff)
+
+coefficients6 = mdl.Coefficients.Estimate;
+
+% 기울기 (slope)
+slope6 = coefficients6(2);
+
+% 절편 (intercept)
+intercept6 = coefficients6(1);
+predict(mdl,10)
+%mdl = fitrlinear()
