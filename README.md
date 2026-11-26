@@ -96,6 +96,7 @@ Author: Do-Gyeong Yuk.
 | --- | --- | --- |
 | Robot-hand motors | Dynamixel XL-320 × 5, connected through an OpenRB-150 board | my working notes (January 2024) |
 | Glove feedback servos | EMAX ES08A × 5 | my working notes (February 2024) |
+| Glove board (flex sensors and feedback servos) | Arduino MKR Zero | my working notes (February 2024) |
 | Serial port / baud rate, single-motor test | `COM7` / 57600 | `dynamixel_basic_code.m` |
 | Motor ID, single-motor test | 3 | `dynamixel_basic_code.m` |
 | Control-table addresses: torque enable / goal position / present position | 24 / 30 / 37 | `dynamixel_basic_code.m` |
@@ -254,7 +255,7 @@ The dates and reasons in this section come from my working notes of January to A
 - A GPU usable by MATLAB, because actors and critics are created with `UseDevice="gpu"`.
 - DSP System Toolbox (Moving Average blocks in the hardware models, Moving Standard Deviation blocks in `reinforcemen_model2.slx`).
 - Curve Fitting Toolbox (`fittype`, `fitoptions`, `fit`) and Statistics and Machine Learning Toolbox (`fitlm`) for the scripts in `modelling/`.
-- Simulink Support Package for Arduino Hardware (Analog Input, Standard Servo Write and Standard Servo Read blocks) and an Arduino Uno for the hardware models.
+- Simulink Support Package for Arduino Hardware (Analog Input, Standard Servo Write and Standard Servo Read blocks) and an Arduino board for the hardware models; the board used was an Arduino MKR Zero.
 - [Dynamixel Library for MATLAB and Simulink](https://www.mathworks.com/matlabcentral/fileexchange/125545-dynamixel-library-for-matlab-and-simulink) (BSD 3-Clause), which provides the `dxlSimLibrary` Read and Write blocks and the functions called by `dynamixel_connect_code.m`; it is not included.
 - The C library of the [DynamixelSDK](https://github.com/ROBOTIS-GIT/DynamixelSDK), which `dynamixel_connect_code.m` adds to the MATLAB path; it is not included.
 - `dynamixel_basic_code.m` uses the `serial`, `fopen` and `instrfind` serial-port functions of MATLAB.
@@ -296,7 +297,7 @@ The dates and reasons in this section come from my working notes of January to A
 - The saved versions of `modelling/curvefitting_for_servo.m` and `modelling/diff_load_linear_regression_code.m` date from April 2024, after the models.
 - `hardware/original_model_robot_hand5_servo_1.slx` is the Simulink backup copy (`.slx.original`) of 2024-03-21 stored under the model's own name; the later working copy, changed into a sweep of one servo, is not included.
 - The hand uses five Dynamixel XL-320 motors on an OpenRB-150 board and the glove uses five EMAX ES08A feedback servos; the scripts themselves do not name the models (the address variables in `dynamixel_basic_code.m` only carry the prefix `ADDR_MX_`).
-- My notes of February and early March 2024 name an Arduino MKR Zero as the board that reads the flex sensors and drives the servos, whereas the configuration sets of the hardware models kept here name an Arduino Uno.
+- The board that read the flex sensors and drove the feedback servos was an Arduino MKR Zero, for which my notes of early March 2024 give the servo pins 0, 2, 3, 4 and 5; the configuration sets of the hardware models as kept name an Arduino Uno with the servo pins 3, 5, 6, 9 and 10.
 - The configuration sets of the hardware models contain the placeholder network settings of the Arduino support package (for example the Wi-Fi password `secretPassword`), which are not real credentials.
 - `hardware/baudrate.m` and `hardware/data_inspection.m` are working notes that contain lines that are not valid MATLAB statements, and `modelling/curvefitting_for_servo.m` uses the workspace variables `servo4_new4` and `mdl`, which it does not create.
 - `dynamixel_connect_code.m` contains an absolute Windows path to the SDK that has to be changed.
