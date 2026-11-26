@@ -94,6 +94,8 @@ Author: Do-Gyeong Yuk.
 
 | Item | Value | Where |
 | --- | --- | --- |
+| Robot-hand motors | Dynamixel XL-320 × 5, connected through an OpenRB-150 board | my working notes (January 2024) |
+| Glove feedback servos | EMAX ES08A × 5 | my working notes (February 2024) |
 | Serial port / baud rate, single-motor test | `COM7` / 57600 | `dynamixel_basic_code.m` |
 | Motor ID, single-motor test | 3 | `dynamixel_basic_code.m` |
 | Control-table addresses: torque enable / goal position / present position | 24 / 30 / 37 | `dynamixel_basic_code.m` |
@@ -224,6 +226,26 @@ Author: Do-Gyeong Yuk.
 - `archive/reinforcemen_model4.slx` uses a reward made of negative position-error, velocity, load-direction, wrong-direction and servo-deviation terms, has no termination, and adds a manual switch for a ramp servo input.
 - `archive/curvefitting_for_servo.asv` starts with five `fitlm` calls on two logged signals, one call per motor, followed by the logistic fit of the saved script.
 
+## Development notes
+
+The dates and reasons in this section come from my working notes of January to April 2024; they are not stored in the code.
+
+| Period | Step |
+| --- | --- |
+| 2024-01 | Read the XL-320 motors from MATLAB over a serial port through the OpenRB-150 board, with Dynamixel Protocol 2.0. |
+| 2024-02 | Connected the flex sensors, the Dynamixel motors and the feedback servos in Simulink with Connected IO, and added the scaling, the moving average and the dead zone of the flex-sensor signals. |
+| 2024-03-05 | Logged a run of about 80 s in which the hand grasped a hard object and a soft object, and designed the reward terms from that log. |
+| 2024-03-08 | Decided to train on a model of the hand built from measurements instead of on the hardware. |
+| 2024-03-15 to 03-20 | Fitted the linear load functions and the logistic goal-position functions of `modelling/`. |
+| 2024-03-21 to 03-23 | Built the reward from continuous signals with Simulink blocks and started training the five agents in one simulation. |
+| 2024-04 | Started a maximum-entropy inverse RL version of the task as MATLAB classes; it was not finished and is not part of this repository. |
+
+- Each finger has its own agent because, as I noted in February 2024, one agent gave me a single action channel.
+- Training runs on the regression model because `train` starts a normal simulation instead of the Connected IO mode, and a replayed log alone gives observations that do not react to the actions.
+- Motors 2 to 5 behave alike except that motors 4 and 5 report the load with the opposite sign, and the models mirror the position signals of servos 4 and 5.
+- The feedback servos can only pull on the fingers, so only one direction of the load matters for the reward.
+- The reward is a continuous function of the measured signals rather than a set of constants, and from 2024-03-23 its best value is zero.
+
 ## Requirements
 
 - MATLAB with Simulink; the models were saved with release R2023b.
@@ -273,7 +295,8 @@ Author: Do-Gyeong Yuk.
 - A MATLAB workspace saved on 2024-03-20, which is not included, holds values that agree with the linear load parameters of the models to three decimal places, in the variables `slope1` to `slope5` and `intercept1` to `intercept5` that the `fitlm` lines kept in `archive/curvefitting_for_servo.asv` assign.
 - The saved versions of `modelling/curvefitting_for_servo.m` and `modelling/diff_load_linear_regression_code.m` date from April 2024, after the models.
 - `hardware/original_model_robot_hand5_servo_1.slx` is the Simulink backup copy (`.slx.original`) of 2024-03-21 stored under the model's own name; the later working copy, changed into a sweep of one servo, is not included.
-- The scripts do not state the Dynamixel model (the address variables in `dynamixel_basic_code.m` only carry the prefix `ADDR_MX_`); MATLAB workspaces saved in March 2024, which are not included, hold `XL320` as the detected model of all five motors.
+- The hand uses five Dynamixel XL-320 motors on an OpenRB-150 board and the glove uses five EMAX ES08A feedback servos; the scripts themselves do not name the models (the address variables in `dynamixel_basic_code.m` only carry the prefix `ADDR_MX_`).
+- My notes of February and early March 2024 name an Arduino MKR Zero as the board that reads the flex sensors and drives the servos, whereas the configuration sets of the hardware models kept here name an Arduino Uno.
 - The configuration sets of the hardware models contain the placeholder network settings of the Arduino support package (for example the Wi-Fi password `secretPassword`), which are not real credentials.
 - `hardware/baudrate.m` and `hardware/data_inspection.m` are working notes that contain lines that are not valid MATLAB statements, and `modelling/curvefitting_for_servo.m` uses the workspace variables `servo4_new4` and `mdl`, which it does not create.
 - `dynamixel_connect_code.m` contains an absolute Windows path to the SDK that has to be changed.
